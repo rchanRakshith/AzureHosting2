@@ -28,7 +28,7 @@ jobs:
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
       - name: publish with dotnet
-        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output "./published
+        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./published
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
