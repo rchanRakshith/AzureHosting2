@@ -22,10 +22,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build ./src/AzureHosting2.Web/AzureHosting2.Web.csproj --configuration Release
+        run: dotnet build AzureHosting2App.Web/AzureHosting2App.Web.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./src/AzureHosting2.Web/AzureHosting2.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish AzureHosting2App.Web/AzureHosting2App.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
