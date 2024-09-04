@@ -25,10 +25,10 @@ jobs:
         run: ls -R
         
       - name: Build with dotnet
-        run: dotnet build AzureHosting2App/AzureHosting2App.Web.csproj --configuration Release
+        run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish AzureHosting2App/AzureHosting2App.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
