@@ -1,0 +1,71 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - rschatmodule
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: List files
+        run: ls -R
+        
+      - name: Build with dotnet
+        run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
+
+      - name: publish with dotnet
+        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2
+        
+      - name: Upload artifact for deployment job
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ./AzureHosting2
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
+
+    steps:
+      - name: Download artifact from build job
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+          path: ./downloaded
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_42A77E941378436593D5C32D7497A63A }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FCF41EBA4DD3413CB1F5ABC336319C83 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A032D5AAE8884AADA2C7CF684CC07EB6 }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'rschatmodule'
+          slot-name: 'Production'
+          package: './downloaded'
+          
