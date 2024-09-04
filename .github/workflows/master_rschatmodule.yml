@@ -28,13 +28,13 @@ jobs:
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
       - name: publish with dotnet
-        run: dotnet publish "AzureHosting2App/AzureHosting2App.csproj" --configuration Release --output "./published" --property:PublishDir="C:/Program Files/dotnet/myapp"
+        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output "./published
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./published
 
   deploy:
     runs-on: windows-latest
@@ -50,6 +50,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ./downloaded
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -64,5 +65,5 @@ jobs:
         with:
           app-name: 'rschatmodule'
           slot-name: 'Production'
-          package: .
+          package: ./download
           
