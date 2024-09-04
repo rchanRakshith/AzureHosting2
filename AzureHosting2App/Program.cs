@@ -17,7 +17,7 @@ namespace AzureHosting2App
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-           
+           // production
                 app.UseSwagger();
                 app.UseSwaggerUI();
          
