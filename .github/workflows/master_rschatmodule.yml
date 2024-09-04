@@ -21,6 +21,9 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: List files
+        run: ls -R
+        
       - name: Build with dotnet
         run: dotnet build AzureHosting2App/AzureHosting2App.Web.csproj --configuration Release
 
