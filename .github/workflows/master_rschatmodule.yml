@@ -28,13 +28,13 @@ jobs:
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
       - name: publish with dotnet
-        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2App
+        run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ./AzureHosting2App
+          path: ./AzureHosting2
 
   deploy:
     runs-on: windows-latest
@@ -65,5 +65,5 @@ jobs:
         with:
           app-name: 'rschatmodule'
           slot-name: 'Production'
-          package: ./AzureHosting2App
+          package: ./AzureHosting2
           
