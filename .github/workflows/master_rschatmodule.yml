@@ -43,7 +43,7 @@ jobs:
       - name: Upload API artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}
+          name: ${{ env.artifact_name }}
           path: ./AzureHosting2
 
   deploy:
@@ -65,7 +65,7 @@ jobs:
       - name: Download API artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}
+          name: ${{ env.artifact_name }}
           path: ./downloaded
       
       - name: Login to Azure
