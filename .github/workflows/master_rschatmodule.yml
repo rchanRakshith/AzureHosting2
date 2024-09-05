@@ -35,9 +35,10 @@ jobs:
         run: echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV
 
       - name: Upload FrontEnd artifact
+        id: upload-frontend-artifact 
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
+          name: .net-app
           path: ./AzureHosting2/frontend
 
       - name: Upload API artifact
@@ -58,9 +59,10 @@ jobs:
 
     steps:
       - name: Download FrontEnd artifact from build job
+        id: upload-frontend-artifact 
         uses: actions/download-artifact@v4
         with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
+          name: .net-app
           path: ./downloaded/frontend
 
       - name: Download API artifact from build job
