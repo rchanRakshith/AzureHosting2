@@ -22,12 +22,13 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build FrontEnd/BlazorAppHosting2/BlazorAppHosting2.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
+        run: dotnet publish FrontEnd/BlazorAppHosting2/BlazorAppHosting2.csproj --configuration Release --output ./AzureHosting2/frontend
+        
       - name: Upload artifact for deployment job
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
@@ -44,9 +45,11 @@ jobs:
 
     steps:
       - name: Download artifact from build job
+        id: download-artifact
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ./downloaded
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -61,5 +64,5 @@ jobs:
         with:
           app-name: 'RSChatFrontEnd'
           slot-name: 'Production'
-          package: .
+          package: './downloaded'
           
