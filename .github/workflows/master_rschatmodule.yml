@@ -32,27 +32,18 @@ jobs:
 
       - name: Generate artifact name
         id: generate-name
-        shell: pwsh
-        run: |
-         if (-not $env:GITHUB_REPOSITORY) {
-            echo "artifact_name=default-artifact-name" | Out-File -FilePath $env:GITHUB_ENV -Append
-         } else {
-            $artifact_name = "${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}"
-            echo "artifact_name=$artifact_name" | Out-File -FilePath $env:GITHUB_ENV -Append
-         }
-
-
+        run: echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV
 
       - name: Upload FrontEnd artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact_name }}-frontend
+          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
           path: ./AzureHosting2/frontend
 
       - name: Upload API artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact_name }}
+          name: ${{ steps.generate-name.outputs.artifact_name }}
           path: ./AzureHosting2
 
   deploy:
@@ -68,13 +59,13 @@ jobs:
       - name: Download FrontEnd artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.artifact_name }}-frontend
+          name: ${{ teps.generate-name.outputs.artifact_name }}-frontend
           path: ./downloaded/frontend
 
       - name: Download API artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.artifact_name }}
+          name: ${{ steps.generate-name.outputs.artifact_name }}
           path: ./downloaded
       
       - name: Login to Azure
