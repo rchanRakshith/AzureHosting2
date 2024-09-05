@@ -24,21 +24,8 @@ jobs:
       - name: Build with dotnet
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
-      - name: Build FrontEnd
-        run: dotnet publish FrontEnd/BlazorAppHosting2/BlazorAppHosting2.csproj --configuration Release --output ./AzureHosting2/frontend
-
       - name: Publish with dotnet
         run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2
-
-      - name: Generate artifact name
-        id: generate-name
-        run: echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV
-
-      - name: Upload FrontEnd artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
-          path: ./AzureHosting2/frontend
 
       - name: Upload API artifact
         id: upload-artifact
@@ -57,17 +44,12 @@ jobs:
       id-token: write # This is required for requesting the JWT
 
     steps:
-      - name: Download FrontEnd artifact from build job 
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
-          path: ./downloaded/frontend
 
       - name: Download API artifact from build job
         id: download-artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.artifact_name }}
+          name: .net-app
           path: ./downloaded
       
       - name: Login to Azure
@@ -76,13 +58,6 @@ jobs:
           client-id: ${{secrets.AZUREAPPSERVICE_CLIENTID_42A77E941378436593D5C32D7497A63A }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FCF41EBA4DD3413CB1F5ABC336319C83 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A032D5AAE8884AADA2C7CF684CC07EB6 }}
-
-      - name: Deploy FrontEnd to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'rschatmodule'
-          slot-name: 'Production'
-          package: './downloaded/frontend'
           
       - name: Deploy API to Azure Web App
         id: deploy-to-webapp
