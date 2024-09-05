@@ -32,7 +32,9 @@ jobs:
 
       - name: Generate artifact name
         id: generate-name
-        run: echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV
+        run: |
+          if [ -z "${{ github.repository }}" ]; then echo "artifact_name=default-artifact-name" >> $GITHUB_ENV; else echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV; fi
+
 
       - name: Upload FrontEnd artifact
         uses: actions/upload-artifact@v4
