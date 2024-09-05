@@ -32,8 +32,15 @@ jobs:
 
       - name: Generate artifact name
         id: generate-name
+        shell: pwsh
         run: |
-          if [ -z "${{ github.repository }}" ]; then echo "artifact_name=default-artifact-name" >> $GITHUB_ENV; else echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV; fi
+         if (-not $env:GITHUB_REPOSITORY) {
+            echo "artifact_name=default-artifact-name" | Out-File -FilePath $env:GITHUB_ENV -Append
+         } else {
+            $artifact_name = "${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}"
+            echo "artifact_name=$artifact_name" | Out-File -FilePath $env:GITHUB_ENV -Append
+         }
+
 
 
       - name: Upload FrontEnd artifact
