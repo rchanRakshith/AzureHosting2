@@ -25,7 +25,7 @@ jobs:
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
       - name: Build FrontEnd
-        run: dotnet publish AzureHosting2App/FrontEnd/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2/frontend
+        run: dotnet publish AzureHosting2App/FrontEnd/BlazorAzureHosting2.csproj --configuration Release --output ./AzureHosting2/frontend
 
       - name: Publish with dotnet
         run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2
