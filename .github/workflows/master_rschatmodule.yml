@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - rschatmodule
 
 on:
@@ -27,10 +24,23 @@ jobs:
       - name: Build with dotnet
         run: dotnet build AzureHosting2App/AzureHosting2App.csproj --configuration Release
 
-      - name: publish with dotnet
+      - name: Build FrontEnd
+        run: dotnet publish FrontEnd/BlazorAppHosting2/BlazorAppHosting2.csproj --configuration Release --output ./AzureHosting2/frontend
+
+      - name: Publish with dotnet
         run: dotnet publish AzureHosting2App/AzureHosting2App.csproj --configuration Release --output ./AzureHosting2
-        
-      - name: Upload artifact for deployment job
+
+      - name: Generate artifact name
+        id: generate-name
+        run: echo "artifact_name=${{ github.repository }}-${{ github.ref_name }}-${{ github.run_id }}" >> $GITHUB_ENV
+
+      - name: Upload FrontEnd artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
+          path: ./AzureHosting2/frontend
+
+      - name: Upload API artifact
         id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
@@ -44,28 +54,40 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # This is required for requesting the JWT
 
     steps:
-      - name: Download artifact from build job
+      - name: Download FrontEnd artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.generate-name.outputs.artifact_name }}-frontend
+          path: ./downloaded/frontend
+
+      - name: Download API artifact from build job
         id: download-artifact
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: ${{ env.artifact_name }}
           path: ./downloaded
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_42A77E941378436593D5C32D7497A63A }}
+          client-id: ${{secrets.AZUREAPPSERVICE_CLIENTID_42A77E941378436593D5C32D7497A63A }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FCF41EBA4DD3413CB1F5ABC336319C83 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A032D5AAE8884AADA2C7CF684CC07EB6 }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy FrontEnd to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'rschatmodule'
+          slot-name: 'Production'
+          package: './downloaded/frontend'
+          
+      - name: Deploy API to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'rschatmodule'
           slot-name: 'Production'
           package: './downloaded'
-          
